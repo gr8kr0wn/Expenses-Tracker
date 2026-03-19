@@ -1,0 +1,499 @@
+/* ============================================================
+   FlowFinance — dashboard.css
+   Styles for the main dashboard application.
+   Linked from: flowfinance.html
+   ============================================================ */
+
+/* ============================================================
+   1. DESIGN TOKENS
+   ============================================================ */
+:root {
+  /* Backgrounds */
+  --bg:          #06080f;
+  --surface:     #0c1018;
+  --card:        #111827;
+  --card2:       #151f2e;
+
+  /* Borders */
+  --border:      rgba(255, 255, 255, 0.06);
+  --border2:     rgba(255, 255, 255, 0.11);
+
+  /* Text */
+  --text:        #e2e8f4;
+  --muted:       #64748b;
+  --subtle:      #374151;
+
+  /* Brand: Emerald */
+  --em:          #10b981;
+  --eml:         #34d399;
+  --em-glow:     rgba(16, 185, 129, 0.15);
+  --em-dim:      rgba(16, 185, 129, 0.08);
+
+  /* Accent: Red / Danger */
+  --red:         #f43f5e;
+  --red-glow:    rgba(244, 63, 94, 0.15);
+  --red-dim:     rgba(244, 63, 94, 0.08);
+
+  /* Accent: Blue */
+  --blue:        #38bdf8;
+  --blue-dim:    rgba(56, 189, 248, 0.08);
+
+  /* Accent: Violet */
+  --violet:      #a78bfa;
+  --violet-dim:  rgba(167, 139, 250, 0.08);
+
+  /* Accent: Amber / Warning */
+  --amber:       #fbbf24;
+  --amber-dim:   rgba(251, 191, 36, 0.08);
+
+  /* Accent: Cyan */
+  --cyan:        #22d3ee;
+
+  /* Typefaces */
+  --fh: 'Syne',    sans-serif;   /* Display headings   */
+  --fb: 'DM Sans', sans-serif;   /* Body / UI copy     */
+  --fm: 'DM Mono', monospace;    /* Numbers / code     */
+}
+
+
+/* ============================================================
+   2. RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--fb);
+  background:  var(--bg);
+  color:       var(--text);
+  min-height:  100vh;
+  overflow-x:  hidden;
+  display:     flex;
+}
+
+/* Radial gradient mesh — adds atmospheric depth */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% -10%,  rgba(16, 185, 129, 0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 100%,  rgba(167, 139, 250, 0.05) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Alpine.js: hide before hydration */
+[x-cloak] { display: none !important; }
+
+/* Font shorthand helpers */
+.fh { font-family: var(--fh); }
+.fm { font-family: var(--fm); }
+
+
+/* ============================================================
+   3. LAYOUT — SIDEBAR + MAIN CONTENT
+   ============================================================ */
+.sidebar {
+  width: 256px;
+  min-height: 100vh;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  position: fixed;
+  top: 0; left: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.main {
+  margin-left: 256px;
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+/* Mobile: sidebar slides in/out */
+@media (max-width: 768px) {
+  .sidebar      { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .main         { margin-left: 0; }
+}
+
+
+/* ============================================================
+   4. CARD COMPONENT
+   ============================================================ */
+.card {
+  background:    var(--card);
+  border:        1px solid var(--border);
+  border-radius: 16px;
+  position:      relative;
+  overflow:      hidden;
+}
+
+/* Top-edge glow line — colour-coded per metric type */
+.glow-g::after,
+.glow-r::after,
+.glow-b::after,
+.glow-v::after {
+  content:  '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+}
+.glow-g::after { background: linear-gradient(90deg, transparent, var(--em),     transparent); opacity: 0.5; }
+.glow-r::after { background: linear-gradient(90deg, transparent, var(--red),    transparent); opacity: 0.5; }
+.glow-b::after { background: linear-gradient(90deg, transparent, var(--blue),   transparent); opacity: 0.5; }
+.glow-v::after { background: linear-gradient(90deg, transparent, var(--violet), transparent); opacity: 0.5; }
+
+
+/* ============================================================
+   5. NAVIGATION ITEMS
+   ============================================================ */
+.nav-item {
+  display:       flex;
+  align-items:   center;
+  gap:           10px;
+  padding:       10px 14px;
+  border-radius: 10px;
+  cursor:        pointer;
+  transition:    all 0.2s;
+  color:         var(--muted);
+  font-size:     14px;
+  font-weight:   500;
+  margin:        1px 0;
+  border:        1px solid transparent;
+}
+.nav-item:hover  { background: rgba(255,255,255,0.04); color: var(--text); }
+.nav-item.active {
+  background:   var(--em-dim);
+  color:        var(--eml);
+  border-color: rgba(16, 185, 129, 0.15);
+}
+
+
+/* ============================================================
+   6. BADGE VARIANTS
+   ============================================================ */
+.badge {
+  font-size:     11px;
+  padding:       2px 8px;
+  border-radius: 20px;
+  font-weight:   500;
+  font-family:   var(--fm);
+}
+.bg { background: var(--em-dim);     color: var(--eml);    border: 1px solid rgba(16,  185, 129, 0.2); }
+.br { background: var(--red-dim);    color: var(--red);    border: 1px solid rgba(244,  63,  94, 0.2); }
+.bb { background: var(--blue-dim);   color: var(--blue);   border: 1px solid rgba(56,  189, 248, 0.2); }
+.bv { background: var(--violet-dim); color: var(--violet); border: 1px solid rgba(167, 139, 250, 0.2); }
+.ba { background: var(--amber-dim);  color: var(--amber);  border: 1px solid rgba(251, 191,  36, 0.2); }
+
+
+/* ============================================================
+   7. FORM INPUTS
+   ============================================================ */
+.inp {
+  background:    var(--surface);
+  border:        1px solid var(--border2);
+  border-radius: 10px;
+  padding:       10px 14px;
+  color:         var(--text);
+  font-family:   var(--fb);
+  font-size:     14px;
+  width:         100%;
+  transition:    border-color 0.2s, box-shadow 0.2s;
+}
+.inp:focus        { border-color: var(--em); box-shadow: 0 0 0 3px var(--em-dim); outline: none; }
+.inp::placeholder { color: var(--muted); }
+select.inp option { background: var(--card); color: var(--text); }
+
+
+/* ============================================================
+   8. BUTTON VARIANTS
+   ============================================================ */
+.btn {
+  font-family:  var(--fb);
+  cursor:       pointer;
+  border:       none;
+  display:      inline-flex;
+  align-items:  center;
+  gap:          8px;
+  transition:   all 0.2s;
+}
+
+/* Primary — emerald fill */
+.btn-p {
+  background:    var(--em);
+  color:         #021812;
+  font-weight:   600;
+  font-size:     14px;
+  padding:       10px 20px;
+  border-radius: 10px;
+}
+.btn-p:hover {
+  background: var(--eml);
+  transform:  translateY(-1px);
+  box-shadow: 0 8px 24px var(--em-glow);
+}
+
+/* Secondary — semi-transparent ghost */
+.btn-s {
+  background:    rgba(255,255,255,0.05);
+  color:         var(--text);
+  border:        1px solid var(--border2);
+  font-weight:   500;
+  font-size:     14px;
+  padding:       10px 20px;
+  border-radius: 10px;
+}
+.btn-s:hover { background: rgba(255,255,255,0.08); }
+
+/* Danger — red tint */
+.btn-d {
+  background:    var(--red-dim);
+  color:         var(--red);
+  border:        1px solid rgba(244,63,94,0.2);
+  font-size:     13px;
+  padding:       6px 12px;
+  border-radius: 8px;
+}
+.btn-d:hover { background: rgba(244,63,94,0.18); }
+
+/* Ghost — minimal outline */
+.btn-g {
+  background:    transparent;
+  color:         var(--muted);
+  border:        1px solid var(--border);
+  font-size:     13px;
+  padding:       6px 12px;
+  border-radius: 8px;
+}
+.btn-g:hover { color: var(--text); border-color: var(--border2); }
+
+
+/* ============================================================
+   9. PROGRESS BAR
+   ============================================================ */
+.p-track {
+  height:        6px;
+  background:    rgba(255,255,255,0.06);
+  border-radius: 99px;
+  overflow:      hidden;
+}
+.p-fill {
+  height:        100%;
+  border-radius: 99px;
+  transition:    width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+
+/* ============================================================
+   10. MODAL OVERLAY
+   ============================================================ */
+.overlay {
+  position:        fixed;
+  inset:           0;
+  background:      rgba(0,0,0,0.78);
+  backdrop-filter: blur(10px);
+  z-index:         100;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  padding:         20px;
+}
+
+.mbox {
+  background:    var(--card);
+  border:        1px solid var(--border2);
+  border-radius: 20px;
+  padding:       28px;
+  width:         100%;
+  max-width:     480px;
+  max-height:    90vh;
+  overflow-y:    auto;
+  position:      relative;
+  box-shadow:    0 32px 80px rgba(0,0,0,0.6);
+}
+
+/* Emerald top-glow accent on modal */
+.mbox::before {
+  content:    '';
+  position:   absolute;
+  top:        0;
+  left:       50%;
+  transform:  translateX(-50%);
+  width:      60%;
+  height:     1px;
+  background: linear-gradient(90deg, transparent, var(--em), transparent);
+  opacity:    0.45;
+}
+
+
+/* ============================================================
+   11. ANIMATIONS
+   ============================================================ */
+@keyframes fadeUp  {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes pulseGlow {
+  0%,100% { box-shadow: 0 0 0 0   rgba(16,185,129,0.3); }
+  50%      { box-shadow: 0 0 0 8px rgba(16,185,129,0);   }
+}
+
+/* Staggered reveal utility classes */
+.au { animation: fadeUp 0.45s ease forwards; }
+.a1 { animation-delay: 0.05s; opacity: 0; }
+.a2 { animation-delay: 0.10s; opacity: 0; }
+.a3 { animation-delay: 0.15s; opacity: 0; }
+.a4 { animation-delay: 0.20s; opacity: 0; }
+.a5 { animation-delay: 0.25s; opacity: 0; }
+
+
+/* ============================================================
+   12. STAT NUMBER
+   ============================================================ */
+.stat-n {
+  font-family:     var(--fh);
+  font-size:       28px;
+  font-weight:     700;
+  letter-spacing:  -0.5px;
+  animation:       scaleIn 0.4s ease;
+}
+
+
+/* ============================================================
+   13. TRANSACTION ROW
+   ============================================================ */
+.txn {
+  display:     flex;
+  align-items: center;
+  gap:         14px;
+  padding:     13px 20px;
+  transition:  background 0.15s;
+  cursor:      pointer;
+}
+.txn:hover { background: rgba(255,255,255,0.03); }
+
+
+/* ============================================================
+   14. CATEGORY ICON BUBBLE
+   ============================================================ */
+.ci {
+  width:           40px;
+  height:          40px;
+  border-radius:   12px;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  font-size:       18px;
+  flex-shrink:     0;
+}
+
+
+/* ============================================================
+   15. CUSTOM SCROLLBAR
+   ============================================================ */
+::-webkit-scrollbar       { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--subtle); border-radius: 4px; }
+
+
+/* ============================================================
+   16. TOGGLE SWITCH
+   ============================================================ */
+.tog {
+  width:         44px;
+  height:        24px;
+  background:    var(--subtle);
+  border-radius: 99px;
+  position:      relative;
+  cursor:        pointer;
+  transition:    background 0.2s;
+  flex-shrink:   0;
+}
+.tog.on { background: var(--em); }
+.tog::after {
+  content:       '';
+  width:         18px;
+  height:        18px;
+  background:    white;
+  border-radius: 50%;
+  position:      absolute;
+  top:  3px;
+  left: 3px;
+  transition:    transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.tog.on::after { transform: translateX(20px); }
+
+
+/* ============================================================
+   17. LOGO MARK
+   ============================================================ */
+.logo {
+  width:           32px;
+  height:          32px;
+  background:      linear-gradient(135deg, var(--em), var(--cyan));
+  border-radius:   9px;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  font-family:     var(--fh);
+  font-weight:     800;
+  font-size:       15px;
+  color:           #021812;
+  flex-shrink:     0;
+}
+
+
+/* ============================================================
+   18. AI INSIGHT CARD
+   ============================================================ */
+.ins-card {
+  background:    linear-gradient(135deg, rgba(167,139,250,0.08), rgba(16,185,129,0.05));
+  border:        1px solid rgba(167,139,250,0.15);
+  border-radius: 14px;
+  padding:       14px 16px;
+  margin-bottom: 10px;
+}
+
+
+/* ============================================================
+   19. EMPTY STATE
+   ============================================================ */
+.empty   { text-align: center; padding: 44px 24px; color: var(--muted); }
+.empty-i { font-size: 44px; margin-bottom: 12px; opacity: 0.35; }
+
+
+/* ============================================================
+   20. RECURRING PILL
+   ============================================================ */
+.rec {
+  font-size:     10px;
+  padding:       1px 6px;
+  background:    var(--violet-dim);
+  color:         var(--violet);
+  border:        1px solid rgba(167,139,250,0.2);
+  border-radius: 99px;
+  font-family:   var(--fm);
+}
+
+
+/* ============================================================
+   21. MISCELLANEOUS UTILITIES
+   ============================================================ */
+.divider { height: 1px; background: var(--border); margin: 4px 0; }
+.sl      {
+  font-size:      11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color:          var(--muted);
+  font-weight:    500;
+  margin-bottom:  8px;
+}

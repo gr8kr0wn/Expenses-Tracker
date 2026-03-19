@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FlowFinance — Create Account</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:       #06080f;
+      --surface:  #0c1018;
+      --card:     #111827;
+      --border:   rgba(255,255,255,0.06);
+      --border2:  rgba(255,255,255,0.11);
+      --text:     #e2e8f4;
+      --muted:    #64748b;
+      --em:       #10b981;
+      --eml:      #34d399;
+      --em-glow:  rgba(16,185,129,0.18);
+      --em-dim:   rgba(16,185,129,0.08);
+      --red:      #f43f5e;
+      --red-dim:  rgba(244,63,94,0.10);
+      --cyan:     #22d3ee;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 70% 55% at 85% 15%, rgba(16,185,129,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 55% 45% at 10% 85%, rgba(167,139,250,0.06) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: radial-gradient(rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 32px 32px;
+      pointer-events: none;
+    }
+    .card {
+      position: relative; z-index: 1;
+      background: var(--card);
+      border: 1px solid var(--border2);
+      border-radius: 24px;
+      padding: 40px;
+      width: 100%; max-width: 460px;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.55);
+      animation: rise 0.5s cubic-bezier(0.34,1.4,0.64,1) both;
+    }
+    .card::before {
+      content: '';
+      position: absolute; top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 50%; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--em), transparent);
+      opacity: 0.5;
+    }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(24px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .logo {
+      width: 52px; height: 52px;
+      background: linear-gradient(135deg, var(--em), var(--cyan));
+      border-radius: 15px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 24px;
+      color: #021812;
+      margin: 0 auto 22px;
+      box-shadow: 0 8px 24px var(--em-glow);
+    }
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px; font-weight: 800;
+      text-align: center; margin-bottom: 8px;
+    }
+    .sub {
+      color: var(--muted); font-size: 14px;
+      text-align: center; line-height: 1.6;
+      margin-bottom: 28px;
+    }
+    label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+    .field { margin-bottom: 14px; }
+    .inp-wrap { position: relative; }
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 12px;
+      padding: 12px 42px 12px 16px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    input:focus { border-color: var(--em); box-shadow: 0 0 0 3px var(--em-dim); }
+    input::placeholder { color: var(--muted); }
+    .eye {
+      position: absolute; right: 13px; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none;
+      cursor: pointer; color: var(--muted);
+      font-size: 15px; padding: 0; line-height: 1;
+      transition: color 0.15s;
+    }
+    .eye:hover { color: var(--text); }
+    .str-track {
+      height: 4px; background: rgba(255,255,255,0.06);
+      border-radius: 99px; overflow: hidden; margin-top: 8px;
+    }
+    .str-fill { height: 100%; border-radius: 99px; transition: width 0.3s, background 0.3s; width: 0; }
+    .str-label { font-size: 11px; color: var(--muted); margin-top: 4px; min-height: 16px; }
+    .terms-row {
+      display: flex; align-items: flex-start; gap: 10px;
+      margin-bottom: 20px; cursor: pointer;
+    }
+    .chk {
+      width: 18px; height: 18px; flex-shrink: 0;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 5px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s; margin-top: 1px;
+      font-size: 11px; font-weight: 700; color: #021812;
+    }
+    .chk.on { background: var(--em); border-color: var(--em); }
+    .terms-text { font-size: 13px; color: var(--muted); line-height: 1.5; }
+    .terms-text a { color: var(--eml); text-decoration: none; }
+    .btn {
+      width: 100%;
+      background: var(--em); color: #021812;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700; font-size: 15px;
+      padding: 13px; border: none; border-radius: 12px;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .btn:hover:not(:disabled) {
+      background: var(--eml);
+      transform: translateY(-1px);
+      box-shadow: 0 10px 28px var(--em-glow);
+    }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .error {
+      background: var(--red-dim);
+      border: 1px solid rgba(244,63,94,0.25);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 13px; color: var(--red);
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 16px;
+      animation: fadeIn 0.2s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .divider {
+      display: flex; align-items: center; gap: 12px;
+      color: var(--muted); font-size: 12px; margin: 20px 0;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border2);
+    }
+    .link-row { text-align: center; font-size: 14px; }
+    .link-row a { color: var(--eml); font-weight: 600; text-decoration: none; transition: opacity 0.15s; }
+    .link-row a:hover { opacity: 0.8; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <div class="logo">F</div>
+  <h1>Create your account</h1>
+  <p class="sub">Start tracking your money like a pro.<br>Free forever, no card needed.</p>
+
+  <div class="error" id="errBox" style="display:none">
+    <span>⚠️</span><span id="errMsg"></span>
+  </div>
+
+  <form id="form" onsubmit="onSubmit(event)" novalidate>
+    <div class="field">
+      <label for="name">Full name</label>
+      <div class="inp-wrap">
+        <input type="text" id="name" placeholder="e.g. Tunde Adeleke" autocomplete="name" required />
+      </div>
+    </div>
+    <div class="field">
+      <label for="email">Email address</label>
+      <div class="inp-wrap">
+        <input type="email" id="email" placeholder="you@example.com" autocomplete="email" required />
+      </div>
+    </div>
+    <div class="field">
+      <label for="pass">Password</label>
+      <div class="inp-wrap">
+        <input type="password" id="pass" placeholder="Minimum 8 characters"
+          autocomplete="new-password" oninput="checkStrength(this.value)" required />
+        <button type="button" class="eye" id="eye1" onclick="toggleEye('pass','eye1')">👁</button>
+      </div>
+      <div class="str-track" id="strTrack" style="display:none">
+        <div class="str-fill" id="strFill"></div>
+      </div>
+      <div class="str-label" id="strLabel"></div>
+    </div>
+    <div class="field">
+      <label for="confirm">Confirm password</label>
+      <div class="inp-wrap">
+        <input type="password" id="confirm" placeholder="Repeat your password"
+          autocomplete="new-password" required />
+        <button type="button" class="eye" id="eye2" onclick="toggleEye('confirm','eye2')">👁</button>
+      </div>
+    </div>
+
+    <div class="terms-row" onclick="toggleTerms()">
+      <div class="chk" id="chk"></div>
+      <div class="terms-text">
+        I agree to the <a href="#" onclick="return false">Terms of Service</a> and
+        <a href="#" onclick="return false">Privacy Policy</a>
+      </div>
+    </div>
+
+    <button type="submit" class="btn" id="submitBtn">Create my account</button>
+  </form>
+
+  <div class="divider">already have an account?</div>
+  <div class="link-row">
+    <a href="login.html">← Sign in instead</a>
+  </div>
+</div>
+
+<script src="auth.js"></script>
+<script>
+  try { requireGuest(); } catch(e) { /* redirecting */ }
+
+  let agreed = false;
+
+  function toggleTerms() {
+    agreed = !agreed;
+    const el = document.getElementById('chk');
+    el.classList.toggle('on', agreed);
+    el.textContent = agreed ? '✓' : '';
+  }
+
+  function toggleEye(id, btnId) {
+    const inp = document.getElementById(id);
+    const btn = document.getElementById(btnId);
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+    btn.textContent = inp.type === 'password' ? '👁' : '🙈';
+  }
+
+  function checkStrength(val) {
+    const track = document.getElementById('strTrack');
+    const fill  = document.getElementById('strFill');
+    const label = document.getElementById('strLabel');
+    if (!val) { track.style.display = 'none'; label.textContent = ''; return; }
+    track.style.display = 'block';
+    let score = 0;
+    if (val.length >= 8)           score++;
+    if (/[A-Z]/.test(val))         score++;
+    if (/[0-9]/.test(val))         score++;
+    if (/[^A-Za-z0-9]/.test(val))  score++;
+    const levels = [
+      { w: '25%', bg: '#f43f5e', text: 'Weak'      },
+      { w: '50%', bg: '#fbbf24', text: 'Fair'      },
+      { w: '75%', bg: '#38bdf8', text: 'Good'      },
+      { w: '100%',bg: '#10b981', text: 'Strong 💪' },
+    ];
+    const lv = levels[Math.max(score - 1, 0)];
+    fill.style.width      = lv.w;
+    fill.style.background = lv.bg;
+    label.textContent     = lv.text;
+    label.style.color     = lv.bg;
+  }
+
+  function showErr(msg) {
+    const b = document.getElementById('errBox');
+    document.getElementById('errMsg').textContent = msg;
+    b.style.display = 'flex';
+  }
+
+  async function onSubmit(e) {
+    e.preventDefault();
+    document.getElementById('errBox').style.display = 'none';
+
+    const name    = document.getElementById('name').value.trim();
+    const email   = document.getElementById('email').value.trim();
+    const pass    = document.getElementById('pass').value;
+    const confirm = document.getElementById('confirm').value;
+
+    if (!name)             return showErr('Please enter your full name.');
+    if (!email)            return showErr('Please enter your email address.');
+    if (pass.length < 8)   return showErr('Password must be at least 8 characters.');
+    if (pass !== confirm)  return showErr('Passwords do not match.');
+    if (!agreed)           return showErr('Please accept the Terms of Service to continue.');
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Creating account…';
+
+    try {
+      const result = await signupUser(name, email, pass);
+      if (result.ok) {
+        window.location.replace('flowfinance.html');
+      } else {
+        showErr(result.error);
+        btn.disabled = false;
+        btn.textContent = 'Create my account';
+      }
+    } catch(err) {
+      showErr('Something went wrong. Please try again.');
+      btn.disabled = false;
+      btn.textContent = 'Create my account';
+    }
+  }
+</script>
+</body>
+</html>

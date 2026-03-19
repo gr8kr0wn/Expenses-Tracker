@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en" x-data="app()" x-init="init()">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FlowFinance — Smart Money OS</title>
+
+  <!-- ── CDN Libraries ─────────────────────────────────────── -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.13.3/cdn.min.js" defer></script>
+
+  <!-- ── Google Fonts ──────────────────────────────────────── -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <!-- Dashboard styles -->
+  <link rel="stylesheet" href="dashboard.css" />
+</head>
+<body>
+
+<!-- ================================================================
+     ONBOARDING MODAL  (3-step wizard)
+     ================================================================ -->
+<div x-show="showOnboard" class="overlay" style="z-index:200" x-cloak>
+  <div class="mbox" style="max-width:520px" x-data="{step:1,name:'',currency:'NGN',income:0}">
+
+    <!-- Step progress bar -->
+    <div style="display:flex;gap:6px;margin-bottom:24px">
+      <template x-for="s in 3">
+        <div style="height:3px;border-radius:99px;flex:1;transition:background .3s"
+             :style="s <= step ? 'background:var(--em)' : 'background:rgba(255,255,255,.08)'"></div>
+      </template>
+    </div>
+
+    <!-- ── STEP 1: Welcome ────────────────────── -->
+    <div x-show="step === 1">
+      <div style="text-align:center;padding-bottom:22px">
+        <div class="logo" style="margin:0 auto 16px;width:54px;height:54px;font-size:22px;border-radius:15px">F</div>
+        <h1 class="fh" style="font-size:26px;font-weight:800;margin-bottom:8px">Welcome to FlowFinance</h1>
+        <p style="color:var(--muted);font-size:15px;line-height:1.7">
+          Your premium Money OS. Track every naira, control every budget, and grow your wealth — beautifully.
+        </p>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px">
+        <div style="background:var(--em-dim);border:1px solid rgba(16,185,129,.15);border-radius:12px;padding:14px;text-align:center">
+          <div style="font-size:22px;margin-bottom:6px">📊</div>
+          <div style="font-size:12px;color:var(--eml);font-weight:600">Analytics</div>
+        </div>
+        <div style="background:var(--blue-dim);border:1px solid rgba(56,189,248,.15);border-radius:12px;padding:14px;text-align:center">
+          <div style="font-size:22px;margin-bottom:6px">🎯</div>
+          <div style="font-size:12px;color:var(--blue);font-weight:600">Budgets</div>
+        </div>
+        <div style="background:var(--violet-dim);border:1px solid rgba(167,139,250,.15);border-radius:12px;padding:14px;text-align:center">
+          <div style="font-size:22px;margin-bottom:6px">🤖</div>
+          <div style="font-size:12px;color:var(--violet);font-weight:600">AI Insights</div>
+        </div>
+      </div>
+
+      <button class="btn btn-p" style="width:100%;justify-content:center;padding:13px" @click="step=2">
+        Get Started →
+      </button>
+    </div>
+
+    <!-- ── STEP 2: Profile ────────────────────── -->
+    <div x-show="step === 2">
+      <h2 class="fh" style="font-size:20px;font-weight:700;margin-bottom:4px">Set up your profile</h2>
+      <p style="color:var(--muted);font-size:13px;margin-bottom:20px">Takes 30 seconds. Makes everything personal.</p>
+
+      <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:22px">
+        <div>
+          <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px">Your name</label>
+          <input type="text" class="inp" placeholder="e.g. Tunde Adeleke" x-model="name" />
+        </div>
+        <div>
+          <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px">Primary currency</label>
+          <select class="inp" x-model="currency">
+            <option value="NGN">🇳🇬 Nigerian Naira (₦)</option>
+            <option value="USD">🇺🇸 US Dollar ($)</option>
+            <option value="GBP">🇬🇧 British Pound (£)</option>
+            <option value="EUR">🇪🇺 Euro (€)</option>
+            <option value="GHS">🇬🇭 Ghana Cedi (₵)</option>
+            <option value="KES">🇰🇪 Kenyan Shilling (KSh)</option>
+            <option value="ZAR">🇿🇦 South African Rand (R)</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px">
+            Monthly income <span style="color:var(--subtle)">(optional)</span>
+          </label>
+          <input type="number" class="inp" placeholder="0.00" x-model="income" />
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-s" @click="step=1">← Back</button>
+        <button class="btn btn-p" style="flex:1;justify-content:center" @click="step=3">Continue →</button>
+      </div>
+    </div>
+
+    <!-- ── STEP 3: Launch ─────────────────────── -->
+    <div x-show="step === 3">
+      <div style="text-align:center;padding-bottom:22px">
+        <div style="font-size:52px;margin-bottom:14px">🎉</div>
+        <h2 class="fh" style="font-size:22px;font-weight:800;margin-bottom:8px">
+          You're all set<span x-text="name ? ', ' + name.split(' ')[0] : ''"></span>!
+        </h2>
+        <p style="color:var(--muted);font-size:14px;line-height:1.7;margin-bottom:20px">
+          Your FlowFinance dashboard is ready. Start tracking and take control of your money.
+        </p>
+        <div style="background:var(--em-dim);border:1px solid rgba(16,185,129,.2);border-radius:12px;padding:14px;text-align:left;margin-bottom:22px">
+          <div style="font-size:13px;color:var(--eml);font-weight:600;margin-bottom:8px">💡 Quick tips</div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.9">
+            • Press <kbd style="background:rgba(255,255,255,.08);padding:1px 7px;border-radius:4px;font-size:11px">N</kbd>
+              anywhere to quickly add a transaction<br />
+            • Set budgets before you spend — they create accountability<br />
+            • Check Analytics weekly — patterns reveal opportunities
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-p" style="width:100%;justify-content:center;padding:13px"
+              @click="completeOnboard(name, currency, income)">
+        Launch Dashboard 🚀
+      </button>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ================================================================
+     ADD / EDIT TRANSACTION MODAL
+     ================================================================ -->
+<div x-show="showAddTxn" class="overlay" @click.self="showAddTxn=false; resetForm()" x-cloak>
+  <div class="mbox">
+
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <h2 class="fh" style="font-size:18px;font-weight:700"
+          x-text="editingTxn ? 'Edit Transaction' : 'New Transaction'"></h2>
+      <button @click="showAddTxn=false; resetForm()"
+        style="background:rgba(255,255,255,.06);border:1px solid var(--border2);border-radius:8px;padding:6px 10px;color:var(--muted);cursor:pointer;font-size:16px">✕</button>
+    </div>
+
+    <!-- Income / Expense toggle -->
+    <div style="display:flex;gap:8px;margin-bottom:18px;background:rgba(255,255,255,.04);border-radius:12px;padding:4px">
+      <button @click="form.type='expense'"
+        :style="form.type==='expense'
+          ? 'background:var(--red-dim);color:var(--red);border:1px solid rgba(244,63,94,.3)'
+          : 'background:transparent;color:var(--muted);border:1px solid transparent'"
+        style="flex:1;padding:9px;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--fb)">
+        📤 Expense
+      </button>
+      <button @click="form.type='income'"
+        :style="form.type==='income'
+          ? 'background:var(--em-dim);color:var(--eml);border:1px solid rgba(16,185,129,.3)'
+          : 'background:transparent;color:var(--muted);border:1px solid transparent'"
+        style="flex:1;padding:9px;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--fb)">
+        📥 Income
+      </button>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:14px">
+
+      <!-- Amount -->
+      <div>
+        <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px">
+          Amount <span style="color:var(--red)">*</span>
+        </label>
+        <div style="position:relative">
+          <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-family:var(--fm);font-size:16px;color:var(--muted)"
+            x-text="csym()"></span>
+          <input type="number" class="inp" placeholder="0.00" x-model="form.amount"
+            style="padding-left:32px;font-family:var(--fm);font-size:20px;font-weight:600"
+            min="0" step="0.01" />
+        </div>
+      </div>
+
+      <!-- Category + Date (2-col grid) -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div>
+          <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px">Category</label>
+          <select class="inp" x-model="form.category">
+            <template x-for="c in categories" :key="c.id">
+              <option :value="c.id" x-text="c.icon + ' ' + c.name"></option>
+            </template>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px">Date</label>
+          <input type="date" class="inp" x-model="form.date" />
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div>
+        <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px">
+          Description <span style="color:var(--subtle);font-size:11px">(optional)</span>
+        </label>
+        <input type="text" class="inp" placeholder="e.g. Lunch at Chicken Republic" x-model="form.description" />
+      </div>
+
+      <!-- Recurring toggle -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--violet-dim);border:1px solid rgba(167,139,250,.15);border-radius:10px">
+        <div>
+          <div style="font-size:14px;font-weight:500;margin-bottom:2px">Recurring transaction</div>
+          <div style="font-size:12px;color:var(--muted)">Auto-log monthly (rent, salary, subscriptions)</div>
+        </div>
+        <div class="tog" :class="{on: form.recurring}" @click="form.recurring = !form.recurring"></div>
+      </div>
+
+      <!-- Frequency (visible only when recurring) -->
+      <div x-show="form.recurring">
+        <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px">Repeat every</label>
+        <select class="inp" x-model="form.frequency">
+          <option value="weekly">Weekly</option>
+          <option value="monthly">Monthly</option>
+          <option value="yearly">Yearly</option>
+        </select>
+      </div>
+
+      <button class="btn btn-p" @click="saveTxn()"
+        style="width:100%;justify-content:center;padding:13px;border-radius:12px"
+        x-text="editingTxn ? 'Save Changes' : 'Add Transaction'"></button>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ================================================================
+     ADD BUDGET MODAL
+     ================================================================ -->
+<div x-show="showAddBudget" class="overlay" @click.self="showAddBudget=false" x-cloak>
+  <div class="mbox" style="max-width:400px">
+
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <h2 class="fh" style="font-size:18px;font-weight:700">Set Budget Limit</h2>
+      <button @click="showAddBudget=false"
+        style="background:rgba(255,255,255,.06);border:1px solid var(--border2);border-radius:8px;padding:6px 10px;color:var(--muted);cursor:pointer;font-size:16px">✕</button>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div>
+        <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px">Category</label>
+        <select class="inp" x-model="bForm.category">
+          <template x-for="c in expCats()" :key="c.id">
+            <option :value="c.id" x-text="c.icon + ' ' + c.name"></option>
+          </template>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px">Monthly limit</label>
+        <div style="position:relative">
+          <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-family:var(--fm);color:var(--muted)"
+            x-text="csym()"></span>
+          <input type="number" class="inp" placeholder="0" x-model="bForm.limit"
+            style="padding-left:30px;font-family:var(--fm)" />
+        </div>
+      </div>
+      <button class="btn btn-p" @click="saveBudget()" style="width:100%;justify-content:center">Save Budget</button>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ================================================================
+     ADD CATEGORY MODAL
+     ================================================================ -->
+<div x-show="showAddCat" class="overlay" @click.self="showAddCat=false" x-cloak>
+  <div class="mbox" style="max-width:360px">
+
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <h2 class="fh" style="font-size:18px;font-weight:700">New Category</h2>
+      <button @click="showAddCat=false"
+        style="background:rgba(255,255,255,.06);border:1px solid var(--border2);border-radius:8px;padding:6px 10px;color:var(--muted);cursor:pointer;font-size:16px">✕</button>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div>
+        <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px">Name</label>
+        <input type="text" class="inp" placeholder="e.g. Fitness" x-model="cForm.name" />
+      </div>
+      <div>
+        <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px">Emoji</label>
+        <input type="text" class="inp" placeholder="💪" x-model="cForm.icon" maxlength="2" />
+      </div>
+      <div>
+        <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px">Type</label>
+        <div style="display:flex;gap:8px">
+          <button @click="cForm.type='expense'"
+            :style="cForm.type==='expense'
+              ? 'background:var(--red-dim);color:var(--red);border:1px solid rgba(244,63,94,.3)'
+              : 'background:rgba(255,255,255,.04);color:var(--muted);border:1px solid var(--border)'"
+            style="flex:1;padding:9px;border-radius:9px;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--fb)">
+            Expense
+          </button>
+          <button @click="cForm.type='income'"
+            :style="cForm.type==='income'
+              ? 'background:var(--em-dim);color:var(--eml);border:1px solid rgba(16,185,129,.3)'
+              : 'background:rgba(255,255,255,.04);color:var(--muted);border:1px solid var(--border)'"
+            style="flex:1;padding:9px;border-radius:9px;font-size:13px;font-weight:500;cursor:pointer;font-family:var(--fb)">
+            Income
+          </button>
+        </div>
+      </div>
+      <button class="btn btn-p" @click="saveCat()" style="width:100%;justify-content:center">Add Category</button>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ================================================================
+     SIDEBAR NAVIGATION
+     ================================================================ -->
+<nav class="sidebar" id="sidebar">
+
+  <!-- Logo area -->
+  <div style="padding:20px 16px;border-bottom:1px solid var(--border)">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="logo">F</div>
+      <div>
+        <div class="fh" style="font-size:16px;font-weight:800;letter-spacing:-.3px">FlowFinance</div>
+        <div class="fm" style="font-size:11px;color:var(--muted)">Money OS v2.0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- User avatar -->
+  <div style="padding:14px 16px;border-bottom:1px solid var(--border)">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--em),var(--cyan));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#021812;flex-shrink:0"
+        x-text="initials()"></div>
+      <div style="min-width:0">
+        <div style="font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"
+          x-text="settings.name || 'User'"></div>
+        <div class="fm" style="font-size:11px;color:var(--muted)" x-text="settings.currency || 'NGN'"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation links -->
+  <div style="padding:12px 10px;flex:1;overflow-y:auto">
+    <div class="sl" style="padding:0 6px;margin-bottom:6px">Main</div>
+
+    <div class="nav-item" :class="{active: page==='dashboard'}"    @click="page='dashboard'">
+      <span style="font-size:16px">⚡</span> Dashboard
+    </div>
+    <div class="nav-item" :class="{active: page==='transactions'}" @click="page='transactions'">
+      <span style="font-size:16px">📋</span> Transactions
+      <span class="badge bg" style="margin-left:auto" x-text="transactions.length" x-show="transactions.length > 0"></span>
+    </div>
+    <div class="nav-item" :class="{active: page==='analytics'}"    @click="page='analytics'">
+      <span style="font-size:16px">📈</span> Analytics
+    </div>
+    <div class="nav-item" :class="{active: page==='budgets'}"      @click="page='budgets'">
+      <span style="font-size:16px">🎯</span> Budgets
+      <span class="badge br" style="margin-left:auto" x-text="overCount()" x-show="overCount() > 0"></span>
+    </div>
+    <div class="nav-item" :class="{active: page==='recurring'}"    @click="page='recurring'">
+      <span style="font-size:16px">🔁</span> Recurring
+    </div>
+
+    <div class="divider" style="margin:10px 0"></div>
+    <div class="sl" style="padding:0 6px;margin-bottom:6px">Account</div>
+
+    <div class="nav-item" :class="{active: page==='settings'}" @click="page='settings'">
+      <span style="font-size:16px">⚙️</span> Settings
+    </div>
+
+    <div class="nav-item" onclick="logoutUser()"
+      style="color:#f43f5e;margin-top:2px;"
+      onmouseenter="this.style.background='rgba(244,63,94,0.07)'"
+      onmouseleave="this.style.background=''">
+      <span style="font-size:16px">🚪</span> Sign Out
+    </div>
+  </div>
+
+  <!-- Quick-add CTA -->
+  <div style="padding:14px 10px;border-top:1px solid var(--border)">
+    <button class="btn btn-p" style="width:100%;justify-content:center;border-radius:12px;padding:12px"
+      @click="openAddTxn()">
+      + New Transaction
+    </button>
+  </div>
+</nav>
+
+
+<!-- ================================================================
+     MAIN CONTENT AREA
+     ================================================================ -->
+<main class="main" style="padding:28px 28px 48px">
+
+  <!-- ── Global Top Bar ─────────────────────────────────────── -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px" class="au">
+    <div>
+      <h1 class="fh" style="font-size:22px;font-weight:800" x-text="ptitle()"></h1>
+      <p style="color:var(--muted);font-size:13px;margin-top:3px" x-text="psub()"></p>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="fm" style="font-size:12px;color:var(--muted)" x-text="todayStr()"></div>
+      <button class="btn btn-s" @click="exportCSV()" style="padding:8px 14px;font-size:13px">↓ Export CSV</button>
+    </div>
+  </div>
+
+
+  <!-- ==============================================================
+       PAGE: DASHBOARD
+       ============================================================== -->
+  <div x-show="page === 'dashboard'" x-cloak>
+
+    <!-- KPI Cards -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:22px">
+
+      <div class="card glow-g au a1" style="padding:20px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <div style="font-size:11px;color:var(--muted);font-weight:500;letter-spacing:.06em;text-transform:uppercase">Net Balance</div>
+          <div style="width:32px;height:32px;background:var(--em-dim);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px">💰</div>
+        </div>
+        <div class="stat-n" :style="netBal() >= 0 ? 'color:var(--eml)' : 'color:var(--red)'">
+          <span x-text="csym()"></span><span x-text="fnum(Math.abs(netBal()))"></span>
+        </div>
+        <div style="margin-top:8px;display:flex;align-items:center;gap:6px">
+          <span class="badge" :class="netBal() >= 0 ? 'bg' : 'br'" x-text="netBal() >= 0 ? 'Positive' : 'Negative'"></span>
+          <span style="font-size:12px;color:var(--muted)">all time</span>
+        </div>
+      </div>
+
+      <div class="card glow-g au a2" style="padding:20px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <div style="font-size:11px;color:var(--muted);font-weight:500;letter-spacing:.06em;text-transform:uppercase">Total Income</div>
+          <div style="width:32px;height:32px;background:var(--em-dim);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px">📥</div>
+        </div>
+        <div class="stat-n" style="color:var(--eml)">
+          <span x-text="csym()"></span><span x-text="fnum(totInc())"></span>
+        </div>
+        <div style="margin-top:8px">
+          <span style="font-size:12px;color:var(--muted)">
+            This month: <span style="color:var(--eml)" x-text="csym() + fnum(mthInc())"></span>
+          </span>
+        </div>
+      </div>
+
+      <div class="card glow-r au a3" style="padding:20px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <div style="font-size:11px;color:var(--muted);font-weight:500;letter-spacing:.06em;text-transform:uppercase">Total Expenses</div>
+          <div style="width:32px;height:32px;background:var(--red-dim);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px">📤</div>
+        </div>
+        <div class="stat-n" style="color:var(--red)">
+          <span x-text="csym()"></span><span x-text="fnum(totExp())"></span>
+        </div>
+        <div style="margin-top:8px">
+          <span style="font-size:12px;color:var(--muted)">
+            This month: <span style="color:var(--red)" x-text="csym() + fnum(mthExp())"></span>
+          </span>
+        </div>
+      </div>
+
+      <div class="card glow-v au a4" style="padding:20px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <div style="font-size:11px;color:var(--muted);font-weight:500;letter-spacing:.06em;text-transform:uppercase">Savings Rate</div>
+          <div style="width:32px;height:32px;background:var(--violet-dim);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px">📊</div>
+        </div>
+        <div class="stat-n" style="color:var(--violet)" x-text="savRate() + '%'"></div>
+        <div style="margin-top:10px">
+          <div class="p-track">
+            <div class="p-fill" :style="'width:' + Math.min(savRate(),100) + '%;background:var(--violet)'"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts: Cashflow bar + Donut -->
+    <div style="display:grid;grid-template-columns:1fr 370px;gap:16px;margin-bottom:18px">
+      <div class="card au a1" style="padding:22px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <div>
+            <div class="fh" style="font-size:16px;font-weight:700">Monthly Cashflow</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px">Income vs Expenses · Last 6 months</div>
+          </div>
+          <div style="display:flex;gap:12px;font-size:12px;color:var(--muted)">
+            <span style="display:flex;align-items:center;gap:5px">
+              <span style="width:10px;height:10px;border-radius:3px;background:var(--em);display:inline-block"></span>Income
+            </span>
+            <span style="display:flex;align-items:center;gap:5px">
+              <span style="width:10px;height:10px;border-radius:3px;background:var(--red);display:inline-block"></span>Expenses
+            </span>
+          </div>
+        </div>
+        <div style="position:relative;width:100%;height:220px"><canvas id="chartCF"></canvas></div>
+      </div>
+
+      <div class="card au a2" style="padding:22px">
+        <div style="margin-bottom:14px">
+          <div class="fh" style="font-size:16px;font-weight:700">Spending Breakdown</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px">This month by category</div>
+        </div>
+        <div style="position:relative;width:100%;height:160px"><canvas id="chartDN"></canvas></div>
+        <div id="dnLeg" style="margin-top:12px;display:flex;flex-direction:column;gap:7px"></div>
+      </div>
+    </div>
+
+    <!-- Budget Status + Recent Activity -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px">
+
+      <div class="card au a3" style="padding:22px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <div class="fh" style="font-size:16px;font-weight:700">Budget Status</div>
+          <button class="btn btn-g" @click="page='budgets'" style="font-size:12px">View all →</button>
+        </div>
+        <div x-show="budgets.length === 0" class="empty" style="padding:20px">
+          <div class="empty-i">🎯</div>
+          <div style="font-size:13px">No budgets set</div>
+          <button class="btn btn-s" style="margin-top:10px;font-size:12px;padding:6px 14px" @click="page='budgets'">Set budgets</button>
+        </div>
+        <template x-for="b in budgets.slice(0, 4)" :key="b.id">
+          <div style="margin-bottom:13px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+              <div style="display:flex;align-items:center;gap:7px">
+                <span x-text="getCat(b.category).icon" style="font-size:14px"></span>
+                <span style="font-size:13px;font-weight:500" x-text="getCat(b.category).name"></span>
+                <span class="badge" :class="bpct(b)>=100 ? 'br' : bpct(b)>=80 ? 'ba' : 'bg'" x-text="bpct(b) + '%'"></span>
+              </div>
+              <span class="fm" style="font-size:12px;color:var(--muted)"
+                x-text="csym() + fnum(bspent(b)) + '/' + fnum(b.limit)"></span>
+            </div>
+            <div class="p-track">
+              <div class="p-fill"
+                :style="'width:' + Math.min(bpct(b),100) + '%;background:' + (bpct(b)>=100 ? 'var(--red)' : bpct(b)>=80 ? 'var(--amber)' : 'var(--em)')">
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <div class="card au a4" style="padding:22px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <div class="fh" style="font-size:16px;font-weight:700">Recent Activity</div>
+          <button class="btn btn-g" @click="page='transactions'" style="font-size:12px">View all →</button>
+        </div>
+        <div x-show="transactions.length === 0" class="empty" style="padding:20px">
+          <div class="empty-i">📋</div>
+          <div style="font-size:13px">No transactions yet</div>
+          <button class="btn btn-p" style="margin-top:10px;font-size:12px;padding:7px 14px" @click="openAddTxn()">Add first transaction</button>
+        </div>
+        <template x-for="t in transactions.slice().reverse().slice(0, 6)" :key="t.id">
+          <div class="txn" style="padding:10px 4px" @click="editTxn(t)">
+            <div class="ci" :style="'background:' + ccol(t.category)"><span x-text="getCat(t.category).icon"></span></div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"
+                x-text="t.description || getCat(t.category).name"></div>
+              <div style="font-size:11px;color:var(--muted);margin-top:2px" x-text="fdate(t.date)"></div>
+            </div>
+            <div :style="t.type==='income' ? 'color:var(--eml)' : 'color:var(--red)'"
+              class="fm" style="font-size:14px;font-weight:600;white-space:nowrap">
+              <span x-text="t.type==='income' ? '+' : '-'"></span>
+              <span x-text="csym()"></span>
+              <span x-text="fnum(t.amount)"></span>
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+
+    <!-- AI Insights -->
+    <div class="card au a5" style="padding:22px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+        <div style="width:32px;height:32px;background:var(--violet-dim);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px">🤖</div>
+        <div>
+          <div class="fh" style="font-size:16px;font-weight:700">AI Insights</div>
+          <div style="font-size:12px;color:var(--muted)">Smart observations about your finances</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px">
+        <template x-for="ins in insights()" :key="ins.title">
+          <div class="ins-card">
+            <div style="font-size:20px;margin-bottom:8px" x-text="ins.icon"></div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:4px" x-text="ins.title"></div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.6" x-text="ins.text"></div>
+          </div>
+        </template>
+      </div>
+    </div>
+  </div><!-- /dashboard -->
+
+
+  <!-- ==============================================================
+       PAGE: TRANSACTIONS
+       ============================================================== -->
+  <div x-show="page === 'transactions'" x-cloak>
+
+    <!-- Filters -->
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px" class="au">
+      <input type="text" class="inp" placeholder="🔍 Search..." x-model="search" style="max-width:220px" />
+      <select class="inp" x-model="fCat" style="max-width:165px">
+        <option value="">All categories</option>
+        <template x-for="c in categories" :key="c.id">
+          <option :value="c.id" x-text="c.icon + ' ' + c.name"></option>
+        </template>
+      </select>
+      <select class="inp" x-model="fType" style="max-width:130px">
+        <option value="">All types</option>
+        <option value="income">Income</option>
+        <option value="expense">Expense</option>
+      </select>
+      <select class="inp" x-model="fPer" style="max-width:145px">
+        <option value="">All time</option>
+        <option value="today">Today</option>
+        <option value="week">This week</option>
+        <option value="month">This month</option>
+        <option value="3m">Last 3 months</option>
+      </select>
+      <button class="btn btn-p" @click="openAddTxn()" style="margin-left:auto">+ Add</button>
+    </div>
+
+    <!-- Summary strip -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px" class="au a1">
+      <div style="background:var(--em-dim);border:1px solid rgba(16,185,129,.15);border-radius:12px;padding:14px 16px">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.07em">Filtered Income</div>
+        <div class="fh" style="font-size:20px;font-weight:700;color:var(--eml)" x-text="csym() + fnum(fInc())"></div>
+      </div>
+      <div style="background:var(--red-dim);border:1px solid rgba(244,63,94,.15);border-radius:12px;padding:14px 16px">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.07em">Filtered Expenses</div>
+        <div class="fh" style="font-size:20px;font-weight:700;color:var(--red)" x-text="csym() + fnum(fExp())"></div>
+      </div>
+      <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;padding:14px 16px">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.07em">Count</div>
+        <div class="fh" style="font-size:20px;font-weight:700" x-text="fTxns().length"></div>
+      </div>
+    </div>
+
+    <!-- Transaction list -->
+    <div class="card au a2">
+      <div x-show="fTxns().length === 0" class="empty">
+        <div class="empty-i">🔍</div>
+        <div style="font-size:15px;font-weight:500;color:var(--text);margin-bottom:6px">No transactions found</div>
+        <div style="font-size:13px">Adjust your filters or add a new transaction.</div>
+      </div>
+      <template x-for="(t, i) in fTxns().slice().reverse()" :key="t.id">
+        <div style="border-bottom:1px solid var(--border)">
+          <div class="txn">
+            <div class="ci" :style="'background:' + ccol(t.category)">
+              <span x-text="getCat(t.category).icon"></span>
+            </div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="font-size:14px;font-weight:500" x-text="t.description || getCat(t.category).name"></span>
+                <span class="rec" x-show="t.recurring">🔁 recurring</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;margin-top:3px">
+                <span style="font-size:12px;color:var(--muted)" x-text="fdate(t.date)"></span>
+                <span class="badge" :class="t.type==='income' ? 'bg' : 'br'" x-text="getCat(t.category).name"></span>
+              </div>
+            </div>
+            <div style="text-align:right">
+              <div :style="t.type==='income' ? 'color:var(--eml)' : 'color:var(--red)'"
+                class="fm" style="font-size:16px;font-weight:600">
+                <span x-text="t.type==='income' ? '+' : '-'"></span>
+                <span x-text="csym()"></span>
+                <span x-text="fnum(t.amount)"></span>
+              </div>
+              <div style="display:flex;gap:6px;justify-content:flex-end;margin-top:6px">
+                <button class="btn btn-g" @click.stop="editTxn(t)"   style="padding:4px 10px;font-size:12px">Edit</button>
+                <button class="btn btn-d" @click.stop="delTxn(t.id)" style="padding:4px 10px;font-size:12px">Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+    </div>
+  </div><!-- /transactions -->
+
+
+  <!-- ==============================================================
+       PAGE: ANALYTICS
+       ============================================================== -->
+  <div x-show="page === 'analytics'" x-cloak>
+
+    <!-- Trend line + Category horizontal bar -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px" class="au">
+      <div class="card" style="padding:22px">
+        <div style="margin-bottom:14px">
+          <div class="fh" style="font-size:16px;font-weight:700">Spending Trend</div>
+          <div style="font-size:12px;color:var(--muted)">Monthly expenses · Last 6 months</div>
+        </div>
+        <div style="position:relative;width:100%;height:210px"><canvas id="chartTR"></canvas></div>
+      </div>
+      <div class="card" style="padding:22px">
+        <div style="margin-bottom:14px">
+          <div class="fh" style="font-size:16px;font-weight:700">Category Breakdown</div>
+          <div style="font-size:12px;color:var(--muted)">Spend per category this month</div>
+        </div>
+        <div style="position:relative;width:100%;height:210px"><canvas id="chartCB"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Stat cards row -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:16px" class="au a2">
+      <div class="card" style="padding:18px">
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Highest Spend Day</div>
+        <div class="fh" style="font-size:22px;font-weight:700" x-text="topDay()"></div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px">day of the week</div>
+      </div>
+      <div class="card" style="padding:18px">
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Avg Daily Spend</div>
+        <div class="fh" style="font-size:22px;font-weight:700" x-text="csym() + fnum(avgDaily())"></div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px">this month</div>
+      </div>
+      <div class="card" style="padding:18px">
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Top Category</div>
+        <div class="fh" style="font-size:22px;font-weight:700" x-text="topCat()"></div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px">highest spending</div>
+      </div>
+      <div class="card" style="padding:18px">
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">MoM Change</div>
+        <div class="fh" style="font-size:22px;font-weight:700"
+          :style="momChg() >= 0 ? 'color:var(--red)' : 'color:var(--eml)'"
+          x-text="(momChg() >= 0 ? '+' : '') + momChg() + '%'"></div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px">vs last month</div>
+      </div>
+    </div>
+
+    <!-- Weekly heatmap -->
+    <div class="card au a3" style="padding:22px">
+      <div style="margin-bottom:16px">
+        <div class="fh" style="font-size:16px;font-weight:700">Weekly Heatmap</div>
+        <div style="font-size:12px;color:var(--muted)">Day-of-week spending patterns this month</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <template x-for="d in heatmap()" :key="d.name">
+          <div style="flex:1;min-width:80px;border-radius:10px;padding:14px;text-align:center;transition:all .2s"
+            :style="'background:rgba(16,185,129,' + d.intensity + ');border:1px solid rgba(16,185,129,' + (d.intensity * 0.5) + ')'">
+            <div style="font-size:11px;color:var(--muted);margin-bottom:6px" x-text="d.name"></div>
+            <div class="fm" style="font-size:14px;font-weight:600" x-text="csym() + fnum(d.total)"></div>
+          </div>
+        </template>
+      </div>
+    </div>
+  </div><!-- /analytics -->
+
+
+  <!-- ==============================================================
+       PAGE: BUDGETS
+       ============================================================== -->
+  <div x-show="page === 'budgets'" x-cloak>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px" class="au">
+      <div style="font-size:13px;color:var(--muted)"
+        x-text="budgets.length + ' budget' + (budgets.length !== 1 ? 's' : '') + ' configured'"></div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-s" @click="showAddCat=true">+ Category</button>
+        <button class="btn btn-p" @click="showAddBudget=true">+ Budget</button>
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <div x-show="budgets.length === 0" class="card empty au">
+      <div class="empty-i">🎯</div>
+      <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:8px">No budgets yet</div>
+      <div style="font-size:14px;color:var(--muted);margin-bottom:16px">Set spending limits to stay on track.</div>
+      <button class="btn btn-p" @click="showAddBudget=true">Set your first budget</button>
+    </div>
+
+    <!-- Budget cards grid -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px">
+      <template x-for="b in budgets" :key="b.id">
+        <div class="card au" style="padding:18px"
+          :style="bpct(b)>=100 ? 'border-color:rgba(244,63,94,.3)' : bpct(b)>=80 ? 'border-color:rgba(251,191,36,.3)' : ''">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+            <div style="display:flex;align-items:center;gap:10px">
+              <div class="ci" style="width:36px;height:36px;font-size:16px" :style="'background:' + ccol(b.category)">
+                <span x-text="getCat(b.category).icon"></span>
+              </div>
+              <div>
+                <div style="font-size:15px;font-weight:600" x-text="getCat(b.category).name"></div>
+                <div style="font-size:11px;color:var(--muted)">Monthly budget</div>
+              </div>
+            </div>
+            <button class="btn btn-d" @click="delBudget(b.id)" style="padding:4px 8px;font-size:11px">✕</button>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+            <span style="font-size:12px;color:var(--muted)">Spent</span>
+            <span class="fm" style="font-size:13px;font-weight:500"
+              x-text="csym() + fnum(bspent(b)) + ' / ' + csym() + fnum(b.limit)"></span>
+          </div>
+          <div class="p-track" style="height:8px;margin-bottom:10px">
+            <div class="p-fill"
+              :style="'width:' + Math.min(bpct(b),100) + '%;background:' + (bpct(b)>=100 ? 'var(--red)' : bpct(b)>=80 ? 'var(--amber)' : 'var(--em)')">
+            </div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span class="badge" :class="bpct(b)>=100 ? 'br' : bpct(b)>=80 ? 'ba' : 'bg'"
+              x-text="bpct(b)>=100 ? 'Over budget' : bpct(b) + '% used'"></span>
+            <span style="font-size:12px;color:var(--muted)"
+              x-text="csym() + fnum(Math.max(0, b.limit - bspent(b))) + ' left'"></span>
+          </div>
+        </div>
+      </template>
+    </div>
+
+    <!-- Category manager -->
+    <div class="card au" style="padding:22px;margin-top:18px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div class="fh" style="font-size:16px;font-weight:700">Category Manager</div>
+        <button class="btn btn-s" @click="showAddCat=true" style="font-size:13px;padding:7px 14px">+ Add Category</button>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        <template x-for="c in categories" :key="c.id">
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:99px;border:1px solid var(--border2);font-size:13px">
+            <span x-text="c.icon"></span>
+            <span x-text="c.name"></span>
+            <span class="badge" :class="c.type==='income' ? 'bg' : 'br'" x-text="c.type" style="font-size:10px"></span>
+            <button x-show="!c.default" @click="delCat(c.id)"
+              style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:12px;padding:0">✕</button>
+          </div>
+        </template>
+      </div>
+    </div>
+  </div><!-- /budgets -->
+
+
+  <!-- ==============================================================
+       PAGE: RECURRING
+       ============================================================== -->
+  <div x-show="page === 'recurring'" x-cloak>
+
+    <div x-show="recTxns().length === 0" class="card empty au">
+      <div class="empty-i">🔁</div>
+      <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:8px">No recurring transactions</div>
+      <div style="font-size:14px;color:var(--muted);margin-bottom:16px">Add rent, salary, subscriptions and more.</div>
+      <button class="btn btn-p" @click="openAddTxn()">Add recurring</button>
+    </div>
+
+    <!-- Monthly summary banners -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px" x-show="recTxns().length > 0">
+      <div style="background:var(--em-dim);border:1px solid rgba(16,185,129,.15);border-radius:14px;padding:18px" class="au a1">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.07em">
+          Monthly Recurring Income
+        </div>
+        <div class="fh" style="font-size:24px;font-weight:700;color:var(--eml)" x-text="csym() + fnum(recInc())"></div>
+      </div>
+      <div style="background:var(--red-dim);border:1px solid rgba(244,63,94,.15);border-radius:14px;padding:18px" class="au a2">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.07em">
+          Monthly Recurring Expenses
+        </div>
+        <div class="fh" style="font-size:24px;font-weight:700;color:var(--red)" x-text="csym() + fnum(recExp())"></div>
+      </div>
+    </div>
+
+    <!-- Recurring list -->
+    <div class="card au a3" x-show="recTxns().length > 0">
+      <template x-for="t in recTxns()" :key="t.id">
+        <div style="display:flex;align-items:center;gap:14px;padding:16px 20px;border-bottom:1px solid var(--border)">
+          <div class="ci" style="font-size:18px" :style="'background:' + ccol(t.category)">
+            <span x-text="getCat(t.category).icon"></span>
+          </div>
+          <div style="flex:1">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
+              <span style="font-size:14px;font-weight:500" x-text="t.description || getCat(t.category).name"></span>
+              <span class="rec" x-text="'🔁 ' + t.frequency"></span>
+            </div>
+            <div style="font-size:12px;color:var(--muted)" x-text="'Started: ' + fdate(t.date)"></div>
+          </div>
+          <div :style="t.type==='income' ? 'color:var(--eml)' : 'color:var(--red)'"
+            class="fm" style="font-size:16px;font-weight:600;text-align:right">
+            <span x-text="t.type==='income' ? '+' : '-'"></span>
+            <span x-text="csym()"></span>
+            <span x-text="fnum(t.amount)"></span>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px" x-text="'/' + t.frequency"></div>
+          </div>
+          <button class="btn btn-d" @click="delTxn(t.id)" style="padding:6px 10px">✕</button>
+        </div>
+      </template>
+    </div>
+  </div><!-- /recurring -->
+
+
+  <!-- ==============================================================
+       PAGE: SETTINGS
+       ============================================================== -->
+  <div x-show="page === 'settings'" x-cloak>
+    <div style="max-width:580px" class="au">
+
+      <!-- Profile settings -->
+      <div class="card" style="padding:24px;margin-bottom:16px">
+        <div class="fh" style="font-size:16px;font-weight:700;margin-bottom:18px">Profile Settings</div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div>
+            <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px">Your name</label>
+            <input type="text" class="inp" x-model="settings.name" @change="saveSett()" />
+          </div>
+          <div>
+            <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px">Currency</label>
+            <select class="inp" x-model="settings.currency" @change="saveSett()">
+              <option value="NGN">🇳🇬 Nigerian Naira (₦)</option>
+              <option value="USD">🇺🇸 US Dollar ($)</option>
+              <option value="GBP">🇬🇧 British Pound (£)</option>
+              <option value="EUR">🇪🇺 Euro (€)</option>
+              <option value="GHS">🇬🇭 Ghana Cedi (₵)</option>
+              <option value="KES">🇰🇪 Kenyan Shilling (KSh)</option>
+              <option value="ZAR">🇿🇦 South African Rand (R)</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px">Monthly income target</label>
+            <input type="number" class="inp" x-model="settings.incomeTarget" @change="saveSett()" placeholder="0" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Data management -->
+      <div class="card" style="padding:24px;margin-bottom:16px">
+        <div class="fh" style="font-size:16px;font-weight:700;margin-bottom:6px">Data Management</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:16px">
+          All data is stored securely in your browser's local storage.
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <button class="btn btn-s" @click="exportCSV()" style="justify-content:flex-start;gap:10px">
+            <span>↓</span> Export all transactions (CSV)
+          </button>
+          <button class="btn btn-d" @click="clearAll()"
+            style="width:100%;border-radius:10px;padding:11px;font-size:14px;justify-content:center">
+            ⚠️ Clear all data
+          </button>
+        </div>
+      </div>
+
+      <!-- About -->
+      <div class="card" style="padding:24px">
+        <div class="fh" style="font-size:16px;font-weight:700;margin-bottom:14px">About FlowFinance</div>
+        <div style="display:flex;flex-direction:column;gap:9px;font-size:13px;color:var(--muted)">
+          <div style="display:flex;justify-content:space-between">
+            <span>Version</span>      <span class="badge bg">2.0.0</span>
+          </div>
+          <div style="display:flex;justify-content:space-between">
+            <span>Storage</span>      <span class="fm">localStorage</span>
+          </div>
+          <div style="display:flex;justify-content:space-between">
+            <span>Transactions</span> <span x-text="transactions.length"></span>
+          </div>
+          <div style="display:flex;justify-content:space-between">
+            <span>Categories</span>   <span x-text="categories.length"></span>
+          </div>
+          <div style="display:flex;justify-content:space-between">
+            <span>Budgets set</span>  <span x-text="budgets.length"></span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /settings -->
+
+</main>
+
+<!-- Alpine.js logic lives in a separate file -->
+
+
+
+<!-- ================================================================
+     SCRIPTS — auth.js must come before Alpine so requireAuth()
+     runs before Alpine initializes the app() component.
+     ================================================================ -->
+<script src="auth.js"></script>
+<script>
+  // Block the page immediately if not logged in
+  // (Alpine hasn't initialized yet at this point — script tags run first)
+  try { requireAuth(); } catch(e) { /* stopping execution while redirect happens */ }
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
