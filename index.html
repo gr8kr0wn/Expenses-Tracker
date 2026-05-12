@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FlowFinance</title>
+  <!-- auth.js must be in the same directory and loaded first -->
+  <script src="auth.js"></script>
+  <script>
+    if (isLoggedIn()) {
+      window.location.replace('flowfinance.html');
+    } else {
+      window.location.replace('login.html');
+    }
+  </script>
+</head>
+<body>
+  <p style="text-align:center; margin-top:40px; font-family:sans-serif;">Loading FlowFinance…</p>
+</body>
+</html>
